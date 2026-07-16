@@ -42,7 +42,10 @@ const posts = (await getCollection("blog"))
 				>
 					{
 						posts.map((post, index) => (
-							<div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+							<a
+								href={`/blog/${post.id}/`}
+								class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 no-underline"
+							>
 								<figure>
 									{post.data.heroImage ? (
 										<Image
@@ -57,35 +60,34 @@ const posts = (await getCollection("blog"))
 									)}
 								</figure>
 								<div class="card-body">
-									<h2 class="card-title">
-										<a
-											href={`/blog/${post.id}/`}
-											class="link link-hover"
-										>
+									<div class="flex items-start justify-between gap-2">
+										<h2 class="card-title text-base leading-snug">
 											{post.data.title}
-										</a>
+										</h2>
 										{index === 0 && (
-											<div class="badge badge-secondary">
-												NEW
-											</div>
+											<div class="badge badge-secondary shrink-0">NEW</div>
 										)}
-									</h2>
-									<p class="text-sm opacity-70">
+									</div>
+									<div class="badge badge-primary badge-outline badge-sm w-fit">
+										{post.data.category}
+									</div>
+									<p class="text-sm opacity-70 mt-1">
 										{post.data.description ||
 											"Read more about this topic in the full article."}
 									</p>
-									<div class="card-actions justify-end mt-4">
+									<div class="card-actions justify-between items-center mt-4 w-full">
+										<div 
+											class="scale-90 origin-left"
+											data-lyket-type="like" 
+											data-lyket-id={post.data.title.replace(/\s+/g, "-").toLowerCase()} 
+											data-lyket-namespace="blog-post"
+										></div>
 										<div class="badge badge-outline">
-											<FormattedDate
-												date={post.data.pubDate}
-											/>
-										</div>
-										<div class="badge badge-outline">
-											Blog
+											<FormattedDate date={post.data.pubDate} />
 										</div>
 									</div>
 								</div>
-							</div>
+							</a>
 						))
 					}
 				</div>

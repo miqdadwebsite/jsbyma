@@ -1,15 +1,30 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+import Header from "../../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection("blog")).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// Get unique categories
+const categories = ["All", ...new Set(posts.map((p) => p.data.category))];
+
+// Serialize posts for client-side filtering
+const postsData = posts.map((post) => ({
+	id: post.id,
+	title: post.data.title,
+	description:
+		post.data.description ||
+		"Read more about this topic in the full article.",
+	category: post.data.category,
+	pubDate: post.data.pubDate.toISOString(),
+	heroImage: post.data.heroImage ? true : false,
+}));
 ---
 
 <!doctype html>
@@ -17,54 +32,211 @@ const posts = (await getCollection('blog')).sort(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body>
+	<body class="bg-base-200">
 		<Header />
-		<main class="w-[960px] max-w-[calc(100%-2em)] mx-auto py-12 px-4">
-			<section>
-				<ul class="flex flex-wrap gap-8 list-none m-0 p-0">
+		<main class="w-full max-w-[960px] mx-auto p-4">
+			<section class="mb-12 mt-4">
+				<h1 class="text-3xl font-bold text-center mb-6">
+					All Articles
+				</h1>
+
+				<!-- Category Filter Tabs -->
+				<div
+					class="flex flex-wrap gap-2 justify-center mb-8"
+					id="category-filters"
+				>
 					{
-						posts.map((post, index) => (
-							<li
+						categories.map((cat) => (
+							<button
 								class:list={[
-									"transition-all duration-200",
-									index === 0
-										? "w-full mb-4 text-center"
-										: "w-[calc(50%-1rem)] max-sm:w-full max-sm:text-center",
+									"btn btn-sm rounded-full transition-all",
+									cat === "All"
+										? "bg-black text-white hover:bg-gray-800 border-none"
+										: "btn-ghost border border-base-300",
 								]}
+								data-category={cat}
 							>
-								<a href={`/blog/${post.id}/`} class="block no-underline group">
-									{post.data.heroImage && (
-										<Image
-											width={720}
-											height={360}
-											src={post.data.heroImage}
-											alt=""
-											class:list={[
-												"mb-2 rounded-xl group-hover:shadow-[0_2px_6px_rgba(96,115,159,0.25),0_8px_24px_rgba(96,115,159,0.33),0_16px_32px_rgba(96,115,159,0.33)] transition-shadow duration-200",
-												index === 0 ? "w-full" : "",
-											]}
-										/>
-									)}
-									<h4
-										class:list={[
-											"m-0 text-[rgb(15,18,25)] leading-none group-hover:text-[#2337ff] transition-colors duration-200",
-											index === 0
-												? "text-[2.369rem]"
-												: "",
-										]}
-									>
-										{post.data.title}
-									</h4>
-									<p class="m-0 text-[rgb(96,115,159)] group-hover:text-[#2337ff] transition-colors duration-200">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
+								{cat}
+								{cat !== "All" && (
+									<span class="badge badge-sm ml-1">
+										{
+											posts.filter(
+												(p) => p.data.category === cat,
+											).length
+										}
+									</span>
+								)}
+							</button>
 						))
 					}
-				</ul>
+				</div>
+
+				<!-- Results count -->
+				<p
+					class="text-center text-sm opacity-60 mb-6"
+					id="results-count"
+				>
+					Showing {posts.length} articles
+				</p>
+
+				<!-- Cards Grid -->
+				<div
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+					id="posts-grid"
+				>
+					{
+						posts.map((post, index) => (
+							<a
+								href={`/blog/${post.id}/`}
+								class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 no-underline"
+								data-category={post.data.category}
+								data-post-card
+							>
+								<figure>
+									{post.data.heroImage ? (
+										<Image
+											width={400}
+											height={200}
+											src={post.data.heroImage}
+											alt={post.data.title}
+											class="w-full h-48 object-cover"
+										/>
+									) : (
+										<div class="w-full h-48 bg-neutral" />
+									)}
+								</figure>
+								<div class="card-body">
+									<div class="flex items-start justify-between gap-2">
+										<h2 class="card-title text-base leading-snug">
+											{post.data.title}
+										</h2>
+										{index === 0 && (
+											<div class="badge badge-secondary shrink-0">
+												NEW
+											</div>
+										)}
+									</div>
+									<div class="badge badge-primary badge-outline badge-sm w-fit">
+										{post.data.category}
+									</div>
+									<p class="text-sm opacity-70 mt-1">
+										{post.data.description ||
+											"Read more about this topic in the full article."}
+									</p>
+									<div class="card-actions justify-between items-center mt-4 w-full">
+										<div
+											class="scale-90 origin-left"
+											data-lyket-type="like"
+											data-lyket-id={post.data.title
+												.replace(/\s+/g, "-")
+												.toLowerCase()}
+											data-lyket-namespace="blog-post"
+										/>
+										<div class="badge badge-outline">
+											<FormattedDate
+												date={post.data.pubDate}
+											/>
+										</div>
+									</div>
+								</div>
+							</a>
+						))
+					}
+				</div>
+
+				<!-- Empty state -->
+				<div id="empty-state" class="hidden text-center py-20">
+					<div class="text-6xl mb-4">🔍</div>
+					<p class="text-lg font-semibold">No articles found</p>
+					<p class="opacity-60 text-sm mt-1">
+						Try selecting a different category.
+					</p>
+				</div>
 			</section>
 		</main>
 		<Footer />
+
+		<script>
+			const filterBtns = document.querySelectorAll<HTMLButtonElement>(
+				"#category-filters button",
+			);
+			const cards =
+				document.querySelectorAll<HTMLElement>("[data-post-card]");
+			const resultsCount = document.getElementById("results-count")!;
+			const emptyState = document.getElementById("empty-state")!;
+			const grid = document.getElementById("posts-grid")!;
+
+			let activeCategory = "All";
+
+			function filterPosts(category: string) {
+				activeCategory = category;
+				let visible = 0;
+
+				cards.forEach((card) => {
+					const cardCategory = card.dataset.category;
+					const show =
+						category === "All" || cardCategory === category;
+
+					if (show) {
+						card.style.display = "";
+						card.style.animation = "fadeIn 0.25s ease forwards";
+						visible++;
+					} else {
+						card.style.display = "none";
+					}
+				});
+
+				// Update results count
+				const total = cards.length;
+				resultsCount.textContent =
+					category === "All"
+						? `Showing ${total} articles`
+						: `Showing ${visible} article${visible !== 1 ? "s" : ""} in "${category}"`;
+
+				// Empty state
+				if (visible === 0) {
+					grid.style.display = "none";
+					emptyState.classList.remove("hidden");
+				} else {
+					grid.style.display = "";
+					emptyState.classList.add("hidden");
+				}
+			}
+
+			filterBtns.forEach((btn) => {
+				btn.addEventListener("click", () => {
+					// Update active button styles
+					filterBtns.forEach((b) => {
+						b.classList.remove("bg-black", "text-white", "hover:bg-gray-800", "border-none");
+						b.classList.add(
+							"btn-ghost",
+							"border",
+							"border-base-300",
+						);
+					});
+					btn.classList.add("bg-black", "text-white", "hover:bg-gray-800", "border-none");
+					btn.classList.remove(
+						"btn-ghost",
+						"border",
+						"border-base-300",
+					);
+
+					filterPosts(btn.dataset.category!);
+				});
+			});
+		</script>
+
+		<style>
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+					transform: translateY(8px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+		</style>
 	</body>
 </html>

@@ -1,16 +1,97 @@
 ---
-title: 'First post'
-description: 'Lorem ipsum dolor sit amet'
-pubDate: 'Jul 08 2022'
+title: 'Script Moderator Liqo'
+description: 'Berikut adalah contoh naskah yang bisa digunakan untuk memandu jalannya kegiatan liqo, mulai dari pembukaan hingga penutup.'
+category: 'Islami'
+pubDate: 'Jul 15 2026'
 heroImage: '../../assets/blog-placeholder-3.jpg'
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+### **1. Pembukaan**
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+*(Moderator berdiri di depan peserta dan membuka acara dengan salam)*
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+**Moderator:**
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+*"Assalamu'alaikum warahmatullahi wabarakatuh."*
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+**Moderator:**
+
+*"Alhamdulillah, segala puji bagi Allah Subhanahu wa Ta’ala yang telah memberikan kita nikmat iman, nikmat Islam, dan nikmat kesehatan, sehingga kita bisa berkumpul pada kesempatan ini dalam keadaan sehat wal afiat. Shalawat serta salam semoga senantiasa tercurah kepada junjungan kita, Nabi Muhammad Shallallahu ‘Alaihi Wasallam, beserta keluarga, sahabat, dan para pengikutnya hingga akhir zaman."*
+
+*"Sebelum memulai kegiatan kita hari ini, marilah kita buka dengan membaca basmalah bersama-sama."*
+
+**(Semua peserta membaca basmalah: “Bismillahirrahmanirrahim.”)**
+
+---
+
+### **2. Tilawah Al-Qur’an**
+
+**Moderator:**
+
+*"Selanjutnya, untuk memperlancar acara kita, marilah kita dengarkan lantunan ayat suci Al-Qur’an yang akan dibacakan oleh saudara/saudari [Nama Qari/Qariah]. Kepada saudara/saudari [Nama], dipersilakan."*
+
+*(Setelah tilawah selesai)*
+
+**Moderator:**
+
+*"Jazakumullahu khairan atas tilawahnya, semoga menambah keberkahan dalam kegiatan kita hari ini."*
+
+---
+
+### **3. Sambutan**
+
+**Moderator:**
+
+*"Selanjutnya, mari kita dengarkan sambutan dari [Nama Pembimbing/Penanggung Jawab]. Kepada beliau, kami persilakan."*
+
+*(Setelah sambutan selesai)*
+
+**Moderator:**
+
+*"Jazakumullahu khairan atas sambutannya. Semoga menjadi motivasi bagi kita semua dalam menjalankan kegiatan ini."*
+
+---
+
+### **4. Materi Inti**
+
+**Moderator:**
+
+*"Sekarang kita akan memasuki sesi materi inti yang akan disampaikan oleh [Nama Pembicara]. Kepada beliau, kami persilakan."*
+
+*(Setelah penyampaian materi selesai)*
+
+**Moderator:**
+
+*"Jazakumullahu khairan kepada [Nama Pembicara] atas materi yang sangat bermanfaat. Semoga ilmu yang disampaikan bisa kita amalkan dalam kehidupan sehari-hari."*
+
+---
+
+### **5. Sesi Tanya Jawab**
+
+**Moderator:**
+
+*"Selanjutnya, kita masuk ke sesi tanya jawab. Bagi yang ingin bertanya, dipersilakan untuk mengangkat tangan atau langsung menyampaikan pertanyaan."*
+
+*(Setelah sesi tanya jawab selesai)*
+
+**Moderator:**
+
+*"Terima kasih kepada para peserta yang telah bertanya dan kepada pembicara yang telah memberikan jawabannya dengan jelas."*
+
+---
+
+### **6. Penutup**
+
+**Moderator:**
+
+*"Alhamdulillah, kita telah menyelesaikan seluruh rangkaian acara pada pertemuan kali ini. Semoga apa yang telah kita pelajari bisa menjadi ilmu yang bermanfaat dan bisa diamalkan dalam kehidupan sehari-hari."*
+
+*"Sebelum kita akhiri, mari kita tutup dengan membaca hamdalah dan doa kafaratul majelis bersama-sama."*
+
+**(Semua membaca: "Alhamdulillahi Rabbil ‘Alamin" dan "Subhanakallahumma wa bihamdika, ash-hadu alla ilaha illa anta, astaghfiruka wa atubu ilaik.")**
+
+**Moderator:**
+
+*"Terima kasih atas partisipasi dan kebersamaannya. Mohon maaf jika ada kekurangan dalam memandu acara ini. Wabilahi taufiq wal hidayah, wassalamu’alaikum warahmatullahi wabarakatuh."*
+
+*(Peserta menjawab salam)*

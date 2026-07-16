@@ -1,20 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
-// We pass the blog posts to the client side for filtering
-const posts = await getCollection('blog');
-const searchList = posts.map(post => ({
-	id: post.id,
-	title: post.data.title,
-	description: post.data.description,
-	pubDate: post.data.pubDate,
-	heroImage: post.data.heroImage?.src,
-})).sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 
 <!doctype html>
@@ -30,7 +25,56 @@ const searchList = posts.map(post => ({
 			</div>
 
 			<div id="search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				<!-- Results will be injected here by JS -->
+				{
+					posts.map((post) => (
+						<a
+							href={`/blog/${post.id}/`}
+							class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 no-underline hidden"
+							data-search-card
+							data-title={post.data.title.toLowerCase()}
+							data-description={(post.data.description || "").toLowerCase()}
+						>
+							<figure>
+								{post.data.heroImage ? (
+									<Image
+										width={400}
+										height={200}
+										src={post.data.heroImage}
+										alt={post.data.title}
+										class="w-full h-48 object-cover"
+									/>
+								) : (
+									<div class="w-full h-48 bg-neutral" />
+								)}
+							</figure>
+							<div class="card-body">
+								<div class="flex items-start justify-between gap-2">
+									<h2 class="card-title text-base leading-snug">
+										{post.data.title}
+									</h2>
+								</div>
+								<div class="badge badge-primary badge-outline badge-sm w-fit">
+									{post.data.category}
+								</div>
+								<p class="text-sm opacity-70 mt-1">
+									{post.data.description ||
+										'Read more about this topic in the full article.'}
+								</p>
+								<div class="card-actions justify-between items-center mt-4 w-full">
+									<div 
+										class="scale-90 origin-left"
+										data-lyket-type="like" 
+										data-lyket-id={post.data.title.replace(/\s+/g, "-").toLowerCase()} 
+										data-lyket-namespace="blog-post"
+									></div>
+									<div class="badge badge-outline">
+										<FormattedDate date={post.data.pubDate} />
+									</div>
+								</div>
+							</div>
+						</a>
+					))
+				}
 			</div>
 
 			<div id="no-results" class="hidden text-center py-12">
@@ -40,7 +84,7 @@ const searchList = posts.map(post => ({
 		</main>
 		<Footer />
 
-		<script define:vars={{ searchList }}>
+		<script>
 			// Runs on the client
 			window.addEventListener('DOMContentLoaded', () => {
 				const params = new URLSearchParams(window.location.search);
@@ -49,49 +93,28 @@ const searchList = posts.map(post => ({
 				const queryDisplay = document.getElementById('search-query-display');
 				if (queryDisplay) queryDisplay.textContent = params.get('q') || '';
 				
-				const resultsContainer = document.getElementById('search-results');
+				const cards = document.querySelectorAll<HTMLElement>('[data-search-card]');
 				const noResults = document.getElementById('no-results');
 				
-				if (query && resultsContainer && noResults) {
-					const filtered = searchList.filter(post => 
-						post.title.toLowerCase().includes(query) || 
-						(post.description && post.description.toLowerCase().includes(query))
-					);
+				if (query && noResults) {
+					let visibleCount = 0;
 					
-					if (filtered.length > 0) {
-						filtered.forEach(post => {
-							const date = new Date(post.pubDate).toLocaleDateString('en-us', {
-								year: 'numeric',
-								month: 'short',
-								day: 'numeric',
-							});
-							
-							const article = document.createElement('div');
-							article.className = 'card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1';
-							
-							const imgHtml = post.heroImage 
-								? `<img src="${post.heroImage}" alt="${post.title}" class="w-full h-48 object-cover" />` 
-								: `<div class="w-full h-48 bg-neutral"></div>`;
-								
-							article.innerHTML = `
-						<figure>
-							${imgHtml}
-						</figure>
-						<div class="card-body">
-							<h2 class="card-title">
-								<a href="/blog/${post.id}/" class="link link-hover">${post.title}</a>
-							</h2>
-							<p class="text-sm opacity-70">${post.description || 'Read more about this topic in the full article.'}</p>
-							<div class="card-actions justify-end mt-4">
-								<div class="badge badge-outline">${date}</div>
-								<div class="badge badge-outline">Blog</div>
-							</div>
-						</div>
-					`;
-							resultsContainer.appendChild(article);
-						});
-					} else {
+					cards.forEach(card => {
+						const title = card.dataset.title || '';
+						const desc = card.dataset.description || '';
+						
+						if (title.includes(query) || desc.includes(query)) {
+							card.classList.remove('hidden');
+							visibleCount++;
+						} else {
+							card.classList.add('hidden');
+						}
+					});
+					
+					if (visibleCount === 0) {
 						noResults.classList.remove('hidden');
+					} else {
+						noResults.classList.add('hidden');
 					}
 				} else if (noResults && queryDisplay) {
 					noResults.classList.remove('hidden');
