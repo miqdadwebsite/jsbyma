@@ -13,7 +13,7 @@
 
 /* Keep font variable usage */
 body {
-	font-family: var(--font-atkinson), sans-serif;
+	font-family: 'Poppins', sans-serif;
 }
 
 /* Prose spacing for blog posts */
