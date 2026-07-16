@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+// We pass the blog posts to the client side for filtering
+const posts = await getCollection('blog');
+const searchList = posts.map(post => ({
+	id: post.id,
+	title: post.data.title,
+	description: post.data.description,
+	pubDate: post.data.pubDate,
+	heroImage: post.data.heroImage?.src,
+})).sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Search - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+	</head>
+	<body class="bg-base-200">
+		<Header />
+		<main class="w-full max-w-[960px] mx-auto p-4 min-h-[calc(100vh-200px)]">
+			<div class="mt-8 mb-12">
+				<h1 class="text-3xl font-bold">Search Results for "<span id="search-query-display" class="text-primary"></span>"</h1>
+			</div>
+
+			<div id="search-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<!-- Results will be injected here by JS -->
+			</div>
+
+			<div id="no-results" class="hidden text-center py-12">
+				<p class="text-xl text-base-content/70">No posts found matching your search.</p>
+				<a href="/blog" class="btn btn-primary mt-4">Browse all posts</a>
+			</div>
+		</main>
+		<Footer />
+
+		<script define:vars={{ searchList }}>
+			// Runs on the client
+			window.addEventListener('DOMContentLoaded', () => {
+				const params = new URLSearchParams(window.location.search);
+				const query = params.get('q')?.toLowerCase() || '';
+				
+				const queryDisplay = document.getElementById('search-query-display');
+				if (queryDisplay) queryDisplay.textContent = params.get('q') || '';
+				
+				const resultsContainer = document.getElementById('search-results');
+				const noResults = document.getElementById('no-results');
+				
+				if (query && resultsContainer && noResults) {
+					const filtered = searchList.filter(post => 
+						post.title.toLowerCase().includes(query) || 
+						(post.description && post.description.toLowerCase().includes(query))
+					);
+					
+					if (filtered.length > 0) {
+						filtered.forEach(post => {
+							const date = new Date(post.pubDate).toLocaleDateString('en-us', {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric',
+							});
+							
+							const article = document.createElement('div');
+							article.className = 'card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1';
+							
+							const imgHtml = post.heroImage 
+								? `<img src="${post.heroImage}" alt="${post.title}" class="w-full h-48 object-cover" />` 
+								: `<div class="w-full h-48 bg-neutral"></div>`;
+								
+							article.innerHTML = `
+						<figure>
+							${imgHtml}
+						</figure>
+						<div class="card-body">
+							<h2 class="card-title">
+								<a href="/blog/${post.id}/" class="link link-hover">${post.title}</a>
+							</h2>
+							<p class="text-sm opacity-70">${post.description || 'Read more about this topic in the full article.'}</p>
+							<div class="card-actions justify-end mt-4">
+								<div class="badge badge-outline">${date}</div>
+								<div class="badge badge-outline">Blog</div>
+							</div>
+						</div>
+					`;
+							resultsContainer.appendChild(article);
+						});
+					} else {
+						noResults.classList.remove('hidden');
+					}
+				} else if (noResults && queryDisplay) {
+					noResults.classList.remove('hidden');
+					queryDisplay.textContent = "Please enter a search term.";
+				}
+			});
+		</script>
+	</body>
+</html>

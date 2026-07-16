@@ -1,8 +1,16 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+
+// Fetch the 3 most recent blog posts
+const posts = (await getCollection("blog"))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
 ---
 
 <!doctype html>
@@ -10,39 +18,78 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body>
+	<body class="bg-base-200">
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+		<main class="w-full max-w-[960px] mx-auto p-4">
+			<!-- Hero Section -->
+			<div class="hero bg-base-100 rounded-box shadow-xl mb-12 mt-4 p-8">
+				<div class="hero-content text-center">
+					<div>
+						<h1 class="text-5xl font-bold mb-4">
+							Welcome to My Blog's 👋
+						</h1>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Posts Section -->
+			<section class="mb-24">
+				<h2 class="text-3xl font-bold text-center mb-8">
+					Latest Articles
+				</h2>
+				<div
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+				>
+					{
+						posts.map((post, index) => (
+							<div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
+								<figure>
+									{post.data.heroImage ? (
+										<Image
+											width={400}
+											height={200}
+											src={post.data.heroImage}
+											alt={post.data.title}
+											class="w-full h-48 object-cover"
+										/>
+									) : (
+										<div class="w-full h-48 bg-neutral" />
+									)}
+								</figure>
+								<div class="card-body">
+									<h2 class="card-title">
+										<a
+											href={`/blog/${post.id}/`}
+											class="link link-hover"
+										>
+											{post.data.title}
+										</a>
+										{index === 0 && (
+											<div class="badge badge-secondary">
+												NEW
+											</div>
+										)}
+									</h2>
+									<p class="text-sm opacity-70">
+										{post.data.description ||
+											"Read more about this topic in the full article."}
+									</p>
+									<div class="card-actions justify-end mt-4">
+										<div class="badge badge-outline">
+											<FormattedDate
+												date={post.data.pubDate}
+											/>
+										</div>
+										<div class="badge badge-outline">
+											Blog
+										</div>
+									</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>
