@@ -95,3 +95,5 @@ heroImage: '../../assets/blog-placeholder-3.jpg'
 *"Terima kasih atas partisipasi dan kebersamaannya. Mohon maaf jika ada kekurangan dalam memandu acara ini. Wabilahi taufiq wal hidayah, wassalamu’alaikum warahmatullahi wabarakatuh."*
 
 *(Peserta menjawab salam)*
+
+Script ini bisa disesuaikan dengan situasi dan kebiasaan dalam kelompok liqo/UPA masing-masing. Jika ada bagian yang ingin ditambahkan atau diubah, tinggal disesuaikan saja.

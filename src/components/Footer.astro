@@ -2,9 +2,11 @@
 const today = new Date();
 ---
 
-<footer class="footer footer-center bg-base-200 text-base-content p-10">
-	<nav>
-		<div class="grid grid-flow-col gap-4">
+<footer
+	class="flex flex-col md:flex-row items-center justify-evenly bg-base-200 text-base-content p-10 gap-6"
+>
+	<nav class="order-1 md:order-2">
+		<div class="flex gap-4">
 			<a
 				href="#"
 				target="_blank"
@@ -79,7 +81,7 @@ const today = new Date();
 			</a>
 		</div>
 	</nav>
-	<aside>
+	<aside class="order-2 md:order-1 text-center md:text-left">
 		<p>Copyright &copy; {today.getFullYear()} - MA. All rights reserved.</p>
 	</aside>
 </footer>
