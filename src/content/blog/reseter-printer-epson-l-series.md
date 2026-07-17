@@ -33,10 +33,10 @@ Setelah kamu download resetternya, kamu perlu mengekstrak filenya, lalu ikuti la
 **Langkah 2: Proses Reset Waste Ink Pad**
 
 1. Pilih menu **Particular adjustment mode**.
-2. Akan muncul daftar menu baru. Cari dan pilih menu Waste ink pad counter, lalu klik OK.
-3. Di jendela berikutnya, beri tanda centang ($\checkmark$) pada kotak Main pad counter (dan kotak counter lainnya jika ada di bawahnya, seperti Platen pad counter).
-4. Klik tombol Check terlebih dahulu untuk melihat persentase kapasitas pembuangan saat ini. Biasanya angkanya sudah mencapai 100% atau mendekati.
-5. Centang kembali kotak Main pad counter, lalu klik tombol Initialize.
+2. Akan muncul daftar menu baru. Cari dan pilih menu **Waste ink pad counter**, lalu klik OK.
+3. Di jendela berikutnya, beri tanda centang (✓) pada kotak **Main pad counter** (dan kotak counter lainnya jika ada di bawahnya, seperti Platen pad counter).
+4. Klik tombol **Check** terlebih dahulu untuk melihat persentase kapasitas pembuangan saat ini. Biasanya angkanya sudah mencapai 100% atau mendekati.
+5. Centang kembali kotak **Main pad counter**, lalu klik tombol **Initialize**.
 6. Akan muncul jendela konfirmasi kecil, klik OK. Tunggu beberapa saat hingga proses reset sistem selesai.
 <hr>
 
