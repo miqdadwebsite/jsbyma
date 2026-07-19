@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jsbyma.pages.dev/sitemap-index.xml

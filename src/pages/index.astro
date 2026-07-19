@@ -11,12 +11,35 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 const posts = (await getCollection("blog"))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	name: SITE_TITLE,
+	description: SITE_DESCRIPTION,
+	url: "https://jsbyma.pages.dev",
+	potentialAction: {
+		"@type": "SearchAction",
+		target: {
+			"@type": "EntryPoint",
+			urlTemplate: "https://jsbyma.pages.dev/search?q={search_term_string}",
+		},
+		"query-input": "required name=search_term_string",
+	},
+	publisher: {
+		"@type": "Person",
+		name: "Just Sharing by MA",
+		url: "https://jsbyma.pages.dev",
+	},
+};
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="id">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<!-- JSON-LD Structured Data -->
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 	</head>
 	<body class="bg-base-200">
 		<Header />
