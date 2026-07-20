@@ -1,7 +1,7 @@
 ---
-title: 'Reseter Printer Epson L Series'
+title: 'Cara Reset Printer Epson L Series'
 description: 'Cara reset printer epson l series yang error'
-category: 'How To'
+category: 'Tutorial'
 pubDate: '17 Juli 2026'
 heroImage: '../../assets/blog-placeholder-4.jpg'
 ---
