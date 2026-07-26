@@ -34,110 +34,127 @@ const postsData = posts.map((post) => ({
 	</head>
 	<body class="bg-base-200">
 		<Header />
-		<main class="w-full max-w-[960px] mx-auto p-4">
+		<main class="w-full max-w-[760px] mx-auto px-4 py-8">
 			<section class="mb-12 mt-4">
-				<h1 class="text-3xl font-bold text-center mb-6">
-					All Articles
-				</h1>
-
-				<!-- Category Filter Tabs -->
-				<div
-					class="flex flex-wrap gap-2 justify-center mb-8"
-					id="category-filters"
-				>
-					{
-						categories.map((cat) => (
-							<button
-								class:list={[
-									"btn btn-sm rounded-full transition-all",
-									cat === "All"
-										? "bg-black text-white hover:bg-gray-800 border-none"
-										: "btn-ghost border border-base-300",
-								]}
-								data-category={cat}
-							>
-								{cat}
-								{cat !== "All" && (
-									<span class="badge badge-sm ml-1">
-										{
-											posts.filter(
-												(p) => p.data.category === cat,
-											).length
-										}
-									</span>
-								)}
-							</button>
-						))
-					}
-				</div>
-
-				<!-- Results count -->
-				<p
-					class="text-center text-sm opacity-60 mb-6"
-					id="results-count"
-				>
+				<h1 class="text-3xl font-bold mb-2">All Articles</h1>
+				<p class="text-sm opacity-50 mb-6" id="results-count">
 					Showing {posts.length} articles
 				</p>
 
-				<!-- Cards Grid -->
-				<div
-					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-					id="posts-grid"
-				>
+				<!-- Filters and Sort -->
+				<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+					<!-- Category Filter Tabs -->
+					<div
+						class="flex flex-wrap gap-2"
+						id="category-filters"
+					>
+						{
+							categories.map((cat) => (
+								<button
+									class:list={[
+										"category-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
+										cat === "All"
+											? "active-cat"
+											: "inactive-cat",
+									]}
+									data-category={cat}
+								>
+									{cat}
+									{cat !== "All" && (
+										<span class="ml-1 text-xs opacity-60">
+											{
+												posts.filter(
+													(p) => p.data.category === cat,
+												).length
+											}
+										</span>
+									)}
+								</button>
+							))
+						}
+					</div>
+
+					<!-- Sort Dropdown -->
+					<div class="dropdown dropdown-end">
+						<div tabindex="0" role="button" class="btn btn-sm m-1">
+							Sort by: <span id="current-sort">Newest</span>
+						</div>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow border border-base-300">
+							<li><button class="sort-option" data-value="newest">Newest</button></li>
+							<li><button class="sort-option" data-value="oldest">Oldest</button></li>
+							<li><button class="sort-option" data-value="popular">Popular</button></li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- Post List (Medium-style) -->
+				<div id="posts-list" class="divide-y divide-base-300">
 					{
 						posts.map((post, index) => (
 							<a
 								href={`/blog/${post.id}/`}
-								class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 no-underline"
+								class="post-list-item flex items-start gap-6 py-8 group no-underline"
 								data-category={post.data.category}
+								data-date={post.data.pubDate.valueOf()}
 								data-post-card
 							>
-								<figure>
-									{post.data.heroImage ? (
-										<Image
-											width={400}
-											height={200}
-											src={post.data.heroImage}
-											alt={post.data.title}
-											class="w-full h-48 object-cover"
-										/>
-									) : (
-										<div class="w-full h-48 bg-neutral" />
-									)}
-								</figure>
-								<div class="card-body">
-									<div class="flex items-start justify-between gap-2">
-										<h2 class="card-title text-base leading-snug">
-											{post.data.title}
-										</h2>
+								<!-- Left: Content -->
+								<div class="flex-1 min-w-0">
+									<!-- Author / Meta row -->
+									<div class="flex items-center gap-2 mb-3">
+										<span class="badge badge-ghost bg-base-300 badge-sm font-semibold">
+											{post.data.category}
+										</span>
 										{index === 0 && (
-											<div class="badge badge-secondary shrink-0">
+											<span class="badge badge-ghost bg-base-300 badge-sm font-semibold">
 												NEW
-											</div>
+											</span>
 										)}
 									</div>
-									<div class="badge badge-primary badge-outline badge-sm w-fit">
-										{post.data.category}
-									</div>
-									<p class="text-sm opacity-70 mt-1">
+
+									<!-- Title -->
+									<h2 class="post-title text-xl font-bold leading-snug mb-2 transition-colors duration-200">
+										{post.data.title}
+									</h2>
+
+									<!-- Description -->
+									<p class="text-sm opacity-60 leading-relaxed line-clamp-2 mb-4">
 										{post.data.description ||
 											"Read more about this topic in the full article."}
 									</p>
-									<div class="card-actions justify-between items-center mt-4 w-full">
-										<div
-											class="scale-90 origin-left"
-											data-lyket-type="like"
-											data-lyket-id={post.data.title
-												.replace(/\s+/g, "-")
-												.toLowerCase()}
-											data-lyket-namespace="blog-post"
-										/>
-										<div class="badge badge-outline">
-											<FormattedDate
-												date={post.data.pubDate}
-											/>
-										</div>
+
+									<!-- Footer meta -->
+									<div
+										class="flex items-center gap-4 text-xs opacity-50"
+										data-lyket-id={post.data.title.replace(/\s+/g, "-").toLowerCase()}
+									>
+										<span>
+											<FormattedDate date={post.data.pubDate} />
+										</span>
+
+										<span class="w-1 h-1 rounded-full bg-current inline-block" />
+										<span class="like-count flex items-center gap-1">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+											<span class="like-num">—</span>
+										</span>
 									</div>
+								</div>
+
+								<!-- Right: Thumbnail -->
+								<div class="shrink-0 w-28 h-20 md:w-36 md:h-24 rounded-lg overflow-hidden bg-base-300">
+									{post.data.heroImage ? (
+										<Image
+											width={288}
+											height={192}
+											src={post.data.heroImage}
+											alt={post.data.title}
+											class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+										/>
+									) : (
+										<div class="w-full h-full placeholder-thumb flex items-center justify-center text-2xl opacity-20">
+											📄
+										</div>
+									)}
 								</div>
 							</a>
 						))
@@ -157,14 +174,90 @@ const postsData = posts.map((post) => ({
 		<Footer />
 
 		<script>
+			const LYKET_API_KEY = "pt_866de2eda694caa5888541c1f7cfdb";
+			
+			const cards = document.querySelectorAll<HTMLElement>("[data-post-card]");
+			const list = document.getElementById("posts-list")!;
+			const sortOptions = document.querySelectorAll<HTMLButtonElement>(".sort-option");
+			const currentSortLabel = document.getElementById("current-sort")!;
+			let activeSort = "newest";
+
+			// ─── Sorting ────────────────────────────────────────
+			function sortPosts() {
+				const cardsArray = Array.from(cards);
+				
+				cardsArray.sort((a, b) => {
+					if (activeSort === "newest") {
+						return Number(b.dataset.date) - Number(a.dataset.date);
+					} else if (activeSort === "oldest") {
+						return Number(a.dataset.date) - Number(b.dataset.date);
+					} else if (activeSort === "popular") {
+						const likesA = Number(a.dataset.likes || 0);
+						const likesB = Number(b.dataset.likes || 0);
+						return likesB - likesA;
+					}
+					return 0;
+				});
+
+				cardsArray.forEach(card => list.appendChild(card));
+			}
+
+			sortOptions.forEach((btn) => {
+				btn.addEventListener("click", () => {
+					activeSort = btn.dataset.value!;
+					currentSortLabel.textContent = btn.textContent;
+					sortPosts();
+					// Close dropdown
+					(document.activeElement as HTMLElement)?.blur();
+				});
+			});
+
+			// ─── Fetch & render like counts ─────────────────────────────
+			async function loadLikeCounts() {
+				const metaRows = document.querySelectorAll<HTMLElement>("[data-lyket-id]");
+				const ids = Array.from(metaRows).map((el) => el.dataset.lyketId!);
+
+				await Promise.all(
+					ids.map(async (id, i) => {
+						try {
+							const res = await fetch(
+								`https://api.lyket.dev/v1/like-buttons/blog-post/${id}`,
+								{ headers: { Authorization: `Bearer ${LYKET_API_KEY}` } },
+							);
+							if (!res.ok) return;
+							const json = await res.json();
+							const count: number =
+								json?.data?.attributes?.total_likes ?? 0;
+							
+							const metaRow = metaRows[i];
+							if (metaRow) {
+								const numEl = metaRow.querySelector(".like-num");
+								if (numEl) numEl.textContent = String(count);
+								
+								const card = metaRow.closest("[data-post-card]") as HTMLElement;
+								if (card) {
+									card.dataset.likes = String(count);
+								}
+							}
+						} catch (_) {
+							// silently ignore network errors
+						}
+					}),
+				);
+				
+				if (activeSort === "popular") {
+					sortPosts();
+				}
+			}
+
+			loadLikeCounts();
+
+			// ─── Category filter ────────────────────────────────────────
 			const filterBtns = document.querySelectorAll<HTMLButtonElement>(
-				"#category-filters button",
+				"#category-filters .category-btn",
 			);
-			const cards =
-				document.querySelectorAll<HTMLElement>("[data-post-card]");
 			const resultsCount = document.getElementById("results-count")!;
 			const emptyState = document.getElementById("empty-state")!;
-			const grid = document.getElementById("posts-grid")!;
 
 			let activeCategory = "All";
 
@@ -195,31 +288,22 @@ const postsData = posts.map((post) => ({
 
 				// Empty state
 				if (visible === 0) {
-					grid.style.display = "none";
+					list.style.display = "none";
 					emptyState.classList.remove("hidden");
 				} else {
-					grid.style.display = "";
+					list.style.display = "";
 					emptyState.classList.add("hidden");
 				}
 			}
 
 			filterBtns.forEach((btn) => {
 				btn.addEventListener("click", () => {
-					// Update active button styles
 					filterBtns.forEach((b) => {
-						b.classList.remove("bg-black", "text-white", "hover:bg-gray-800", "border-none");
-						b.classList.add(
-							"btn-ghost",
-							"border",
-							"border-base-300",
-						);
+						b.classList.remove("active-cat");
+						b.classList.add("inactive-cat");
 					});
-					btn.classList.add("bg-black", "text-white", "hover:bg-gray-800", "border-none");
-					btn.classList.remove(
-						"btn-ghost",
-						"border",
-						"border-base-300",
-					);
+					btn.classList.add("active-cat");
+					btn.classList.remove("inactive-cat");
 
 					filterPosts(btn.dataset.category!);
 				});
@@ -230,12 +314,41 @@ const postsData = posts.map((post) => ({
 			@keyframes fadeIn {
 				from {
 					opacity: 0;
-					transform: translateY(8px);
+					transform: translateY(6px);
 				}
 				to {
 					opacity: 1;
 					transform: translateY(0);
 				}
+			}
+
+			/* Active category pill */
+			.active-cat {
+				background-color: #111;
+				color: #fff;
+				border-color: #111;
+			}
+
+			.inactive-cat {
+				background-color: transparent;
+				color: inherit;
+				border-color: oklch(var(--b3));
+			}
+
+			.inactive-cat:hover {
+				background-color: oklch(var(--b3));
+			}
+
+
+
+			/* Post title hover color */
+			.post-list-item:hover .post-title {
+				color: oklch(var(--p));
+			}
+
+			/* Placeholder thumbnail bg */
+			.placeholder-thumb {
+				background: linear-gradient(135deg, oklch(var(--b3)), oklch(var(--b2)));
 			}
 		</style>
 	</body>
