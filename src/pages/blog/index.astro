@@ -97,6 +97,7 @@ const postsData = posts.map((post) => ({
 								data-category={post.data.category}
 								data-date={post.data.pubDate.valueOf()}
 								data-post-card
+								style={index >= 5 ? "display: none;" : ""}
 							>
 								<!-- Left: Content -->
 								<div class="flex-1 min-w-0">
@@ -161,6 +162,13 @@ const postsData = posts.map((post) => ({
 					}
 				</div>
 
+				<!-- Load More Button -->
+				<div class="mt-12 text-center">
+					<button id="load-more-btn" class="btn btn-neutral px-12 rounded-full" style="display: none;">
+						Load More
+					</button>
+				</div>
+
 				<!-- Empty state -->
 				<div id="empty-state" class="hidden text-center py-20">
 					<div class="text-6xl mb-4">🔍</div>
@@ -180,10 +188,20 @@ const postsData = posts.map((post) => ({
 			const list = document.getElementById("posts-list")!;
 			const sortOptions = document.querySelectorAll<HTMLButtonElement>(".sort-option");
 			const currentSortLabel = document.getElementById("current-sort")!;
-			let activeSort = "newest";
+			const filterBtns = document.querySelectorAll<HTMLButtonElement>("#category-filters .category-btn");
+			const resultsCount = document.getElementById("results-count")!;
+			const emptyState = document.getElementById("empty-state")!;
+			const loadMoreBtn = document.getElementById("load-more-btn")!;
 
-			// ─── Sorting ────────────────────────────────────────
-			function sortPosts() {
+			let activeSort = "newest";
+			let activeCategory = "All";
+			let pageSize = 5;
+			let currentPage = 1;
+
+			function updateView() {
+				let visibleCount = 0;
+				let matchCount = 0;
+				
 				const cardsArray = Array.from(cards);
 				
 				cardsArray.sort((a, b) => {
@@ -200,17 +218,81 @@ const postsData = posts.map((post) => ({
 				});
 
 				cardsArray.forEach(card => list.appendChild(card));
+
+				cardsArray.forEach((card) => {
+					const cardCategory = card.dataset.category;
+					const matchesCategory = activeCategory === "All" || cardCategory === activeCategory;
+					
+					if (matchesCategory) {
+						matchCount++;
+						if (visibleCount < currentPage * pageSize) {
+							if (card.style.display === "none") {
+								card.style.display = "";
+								card.style.animation = "none";
+								void card.offsetWidth; // trigger reflow
+								card.style.animation = "fadeIn 0.25s ease forwards";
+							}
+							visibleCount++;
+						} else {
+							card.style.display = "none";
+						}
+					} else {
+						card.style.display = "none";
+					}
+				});
+
+				resultsCount.textContent = activeCategory === "All" 
+					? `Showing ${visibleCount} of ${matchCount} articles` 
+					: `Showing ${visibleCount} of ${matchCount} article${matchCount !== 1 ? "s" : ""} in "${activeCategory}"`;
+
+				if (matchCount === 0) {
+					list.style.display = "none";
+					emptyState.classList.remove("hidden");
+				} else {
+					list.style.display = "";
+					emptyState.classList.add("hidden");
+				}
+
+				if (visibleCount < matchCount) {
+					loadMoreBtn.style.display = "";
+				} else {
+					loadMoreBtn.style.display = "none";
+				}
 			}
 
 			sortOptions.forEach((btn) => {
 				btn.addEventListener("click", () => {
 					activeSort = btn.dataset.value!;
 					currentSortLabel.textContent = btn.textContent;
-					sortPosts();
+					currentPage = 1;
+					updateView();
 					// Close dropdown
 					(document.activeElement as HTMLElement)?.blur();
 				});
 			});
+
+			filterBtns.forEach((btn) => {
+				btn.addEventListener("click", () => {
+					filterBtns.forEach((b) => {
+						b.classList.remove("active-cat");
+						b.classList.add("inactive-cat");
+					});
+					btn.classList.add("active-cat");
+					btn.classList.remove("inactive-cat");
+
+					activeCategory = btn.dataset.category!;
+					currentPage = 1;
+					updateView();
+				});
+			});
+
+			loadMoreBtn.addEventListener("click", () => {
+				currentPage++;
+				updateView();
+			});
+
+			// Initialize view
+			updateView();
 
 			// ─── Fetch & render like counts ─────────────────────────────
 			async function loadLikeCounts() {
@@ -246,68 +328,11 @@ const postsData = posts.map((post) => ({
 				);
 				
 				if (activeSort === "popular") {
-					sortPosts();
+					updateView();
 				}
 			}
 
 			loadLikeCounts();
-
-			// ─── Category filter ────────────────────────────────────────
-			const filterBtns = document.querySelectorAll<HTMLButtonElement>(
-				"#category-filters .category-btn",
-			);
-			const resultsCount = document.getElementById("results-count")!;
-			const emptyState = document.getElementById("empty-state")!;
-
-			let activeCategory = "All";
-
-			function filterPosts(category: string) {
-				activeCategory = category;
-				let visible = 0;
-
-				cards.forEach((card) => {
-					const cardCategory = card.dataset.category;
-					const show =
-						category === "All" || cardCategory === category;
-
-					if (show) {
-						card.style.display = "";
-						card.style.animation = "fadeIn 0.25s ease forwards";
-						visible++;
-					} else {
-						card.style.display = "none";
-					}
-				});
-
-				// Update results count
-				const total = cards.length;
-				resultsCount.textContent =
-					category === "All"
-						? `Showing ${total} articles`
-						: `Showing ${visible} article${visible !== 1 ? "s" : ""} in "${category}"`;
-
-				// Empty state
-				if (visible === 0) {
-					list.style.display = "none";
-					emptyState.classList.remove("hidden");
-				} else {
-					list.style.display = "";
-					emptyState.classList.add("hidden");
-				}
-			}
-
-			filterBtns.forEach((btn) => {
-				btn.addEventListener("click", () => {
-					filterBtns.forEach((b) => {
-						b.classList.remove("active-cat");
-						b.classList.add("inactive-cat");
-					});
-					btn.classList.add("active-cat");
-					btn.classList.remove("inactive-cat");
-
-					filterPosts(btn.dataset.category!);
-				});
-			});
 		</script>
 
 		<style>
