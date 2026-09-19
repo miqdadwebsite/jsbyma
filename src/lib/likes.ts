@@ -83,6 +83,7 @@ export async function loadLikes(ids: string[]): Promise<Map<string, LikeState>> 
 	url.searchParams.set("ids", unique.join(","));
 
 	const res = await fetch(url, {
+		cache: "no-store",
 		headers: { "X-Visitor-Id": getVisitorId() },
 	});
 	if (!res.ok) {

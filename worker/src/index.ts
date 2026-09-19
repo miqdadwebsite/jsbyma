@@ -4,7 +4,7 @@ export interface Env {
 
 const JSON_HEADERS: Record<string, string> = {
 	"Content-Type": "application/json; charset=utf-8",
-	"Cache-Control": "public, max-age=60, s-maxage=60",
+	"Cache-Control": "no-store",
 };
 
 function corsHeaders(origin: string | null): Record<string, string> {
