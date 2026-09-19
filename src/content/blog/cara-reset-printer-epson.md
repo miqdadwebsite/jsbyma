@@ -3,7 +3,7 @@ title: 'Cara Reset Printer Epson L Series'
 description: 'Cara reset printer epson l series yang error'
 category: 'Tutorial'
 pubDate: '17 Juli 2026'
-heroImage: '../../assets/blog-placeholder-4.jpg'
+heroImage: '../../assets/reset-epson.png'
 ---
 
 Hi! ini adalah post kedua saya, kali ini saya akan share bagaimana mereset printer epson l series yang error.
