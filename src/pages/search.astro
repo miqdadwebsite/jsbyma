@@ -57,7 +57,7 @@ const posts = (await getCollection('blog')).sort(
 								<!-- Footer meta -->
 								<div
 									class="flex items-center gap-4 text-xs opacity-50"
-									data-lyket-id={post.data.title.replace(/\s+/g, "-").toLowerCase()}
+									data-like-id={post.data.title.replace(/\s+/g, "-").toLowerCase()}
 								>
 									<span>
 										<FormattedDate date={post.data.pubDate} />
@@ -100,34 +100,26 @@ const posts = (await getCollection('blog')).sort(
 		<Footer />
 
 		<script>
-			const LYKET_API_KEY = "pt_866de2eda694caa5888541c1f7cfdb";
+			import { formatLikes, loadLikes } from "../lib/likes";
 
 			async function loadLikeCounts() {
-				const metaRows = document.querySelectorAll<HTMLElement>("[data-lyket-id]");
-				const ids = Array.from(metaRows).map((el) => el.dataset.lyketId!);
+				const metaRows = document.querySelectorAll<HTMLElement>("[data-like-id]");
+				const ids = Array.from(metaRows).map((el) => el.dataset.likeId!);
+				if (!ids.length) return;
 
-				await Promise.all(
-					ids.map(async (id, i) => {
-						try {
-							const res = await fetch(
-								`https://api.lyket.dev/v1/like-buttons/blog-post/${id}`,
-								{ headers: { Authorization: `Bearer ${LYKET_API_KEY}` } },
-							);
-							if (!res.ok) return;
-							const json = await res.json();
-							const count: number =
-								json?.data?.attributes?.total_likes ?? 0;
-							
-							const metaRow = metaRows[i];
-							if (metaRow) {
-								const numEl = metaRow.querySelector(".like-num");
-								if (numEl) numEl.textContent = String(count);
-							}
-						} catch (_) {
-							// silently ignore network errors
-						}
-					}),
-				);
+				try {
+					const likes = await loadLikes(ids);
+					likes.forEach((state, id) => {
+						const metaRow = Array.from(metaRows).find(
+							(el) => el.dataset.likeId === id,
+						);
+						if (!metaRow) return;
+						const numEl = metaRow.querySelector(".like-num");
+						if (numEl) numEl.textContent = formatLikes(state.likes);
+					});
+				} catch {
+					// silently ignore network errors
+				}
 			}
 
 			// Runs on the client

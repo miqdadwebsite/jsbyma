@@ -5,10 +5,9 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
+import LikeButton from "../components/LikeButton.astro";
 
-type Props = CollectionEntry<"blog">["data"] & {
-	lyketType?: "like" | "clap" | "updown" | "rate";
-};
+type Props = CollectionEntry<"blog">["data"];
 
 const {
 	title,
@@ -17,8 +16,9 @@ const {
 	updatedDate,
 	heroImage,
 	category,
-	lyketType = "like",
 } = Astro.props;
+
+const likeId = title.replace(/\s+/g, "-").toLowerCase();
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
@@ -96,13 +96,9 @@ const jsonLd = {
 								)}
 							</div>
 						</div>
-						<!-- Lyket like button in header -->
-						<div class="header-lyket">
-							<div
-								data-lyket-type={lyketType}
-								data-lyket-id={title.replace(/\s+/g, "-").toLowerCase()}
-								data-lyket-namespace="blog-post"
-							/>
+						<!-- Like button in header -->
+						<div class="header-like">
+							<LikeButton id={likeId} variant="header" />
 						</div>
 					</div>
 				</header>
@@ -128,16 +124,12 @@ const jsonLd = {
 				<!-- Footer reaction -->
 				<div class="article-footer">
 					<div class="footer-divider" />
-					<div class="footer-reaction">
-						<div
-							data-lyket-type={lyketType}
-							data-lyket-id={title.replace(/\s+/g, "-").toLowerCase()}
-							data-lyket-namespace="blog-post"
-						/>
-						<a href="/blog" class="back-link">
-							← Back to all articles
-						</a>
-					</div>
+<div class="footer-reaction">
+					<LikeButton id={likeId} />
+					<a href="/blog" class="back-link">
+						← Back to all articles
+					</a>
+				</div>
 				</div>
 			</article>
 		</main>
@@ -251,7 +243,7 @@ const jsonLd = {
 				font-style: italic;
 			}
 
-			.header-lyket {
+			.header-like {
 				margin-left: auto;
 				flex-shrink: 0;
 			}

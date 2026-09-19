@@ -1,0 +1,25 @@
+name = "jsbyma-likes"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# ── Setup ──────────────────────────────────────────────────────────────────
+# 1. Create the D1 database (once):
+#      npm run db:create
+# 2. Copy the generated database_id and replace "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+#    below.
+# 3. Create the tables (once):
+#      npm run db:migrate
+# 4. Test locally:
+#      npm run dev
+# 5. Deploy:
+#      npm run deploy
+#
+# After deploy, point the blog at this worker by setting the Astro build env:
+#      PUBLIC_LIKES_API_URL=https://jsbyma-likes.<your-account>.workers.dev
+# (the <your-account> subdomain is shown by `wrangler deploy`).
+# ───────────────────────────────────────────────────────────────────────────
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jsbyma-likes-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

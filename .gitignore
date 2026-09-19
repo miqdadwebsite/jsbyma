@@ -6,6 +6,10 @@ dist/
 # dependencies
 node_modules/
 
+# cloudflare worker local state
+worker/.wrangler/
+worker/node_modules/
+
 # logs
 npm-debug.log*
 yarn-debug.log*
