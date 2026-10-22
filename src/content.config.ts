@@ -18,4 +18,32 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const apps = defineCollection({
+	// Load Markdown and MDX files in the `src/content/apps/` directory.
+	loader: glob({ base: './src/content/apps', pattern: '**/*.{md,mdx}' }),
+	schema: ({ image }) =>
+		z.object({
+			title: z.string(),
+			description: z.string(),
+			// App-specific fields
+			version: z.string().optional().default('1.0.0'),
+			category: z.string().optional().default('Utility'),
+			platform: z.array(z.enum(['Windows', 'Mac', 'Linux', 'Android', 'iOS', 'Web'])).optional().default(['Windows']),
+			downloadUrl: z.string().url().optional(),
+			sourceUrl: z.string().url().optional(),
+			size: z.string().optional(), // e.g. "15 MB"
+			// Dates
+			pubDate: z.coerce.date(),
+			updatedDate: z.coerce.date().optional(),
+			// Media
+			appIcon: z.optional(image()),
+			heroImage: z.optional(image()),
+			screenshots: z.array(image()).optional(),
+			// Flags
+			isFree: z.boolean().optional().default(true),
+			isOpenSource: z.boolean().optional().default(false),
+			featured: z.boolean().optional().default(false),
+		}),
+});
+
+export const collections = { blog, apps };

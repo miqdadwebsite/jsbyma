@@ -1,0 +1,544 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import type { CollectionEntry } from "astro:content";
+import AppLightbox from "../components/AppLightbox.astro";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+
+type Props = CollectionEntry<"apps">["data"];
+
+const {
+  title,
+  description,
+  version,
+  category,
+  platform,
+  downloadUrl,
+  sourceUrl,
+  size,
+  pubDate,
+  updatedDate,
+  heroImage,
+  appIcon,
+  screenshots,
+  isFree,
+  isOpenSource,
+} = Astro.props;
+
+// Combine hero image with gallery screenshots (like portfolio pattern)
+const allImages: ImageMetadata[] = [
+  ...(heroImage ? [heroImage] : []),
+  ...(screenshots ?? []),
+];
+const hasGallery = allImages.length > 0;
+
+const platformIcons: Record<string, string> = {
+  Windows: "🪟",
+  Mac: "🍎",
+  Linux: "🐧",
+  Android: "🤖",
+  iOS: "📱",
+  Web: "🌐",
+};
+---
+
+<html lang="id" data-theme="light">
+  <head>
+    <BaseHead title={`${title} — Apps`} description={description} />
+  </head>
+
+  <body class="app-body">
+    <Header />
+
+    <main>
+      <article id="app-content">
+        <!-- Hero Banner + Lightbox -->
+        <div class="app-hero">
+          {hasGallery ? (
+            <>
+              {/* Clickable hero — opens lightbox at index 0 */}
+              <button
+                class="hero-trigger group"
+                data-lightbox-id="app-gallery"
+                data-image-index="0"
+                type="button"
+                aria-label="View screenshots"
+              >
+                <Image
+                  width={1200}
+                  height={400}
+                  src={allImages[0]}
+                  alt={title}
+                  class="hero-img group-hover:scale-105 transition-transform duration-500"
+                />
+                <div class="hero-overlay" />
+                {/* Zoom hint */}
+                <div class="hero-zoom-hint">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.5 5.5a7.5 7.5 0 0010.5 10.5zM10.5 7.5v6m3-3h-6" />
+                  </svg>
+                  {allImages.length > 1 && <span>{allImages.length} foto</span>}
+                </div>
+              </button>
+            </>
+          ) : (
+            <div class="hero-placeholder">📦</div>
+          )}
+        </div>
+
+        {/* Lightbox + thumbnail strip — outside hero so overflow:hidden doesn't clip thumbs */}
+        {hasGallery && (
+          <div class="gallery-strip-wrap">
+            <AppLightbox id="app-gallery" images={allImages} />
+          </div>
+        )}
+
+        <!-- App Header Card -->
+        <div class="app-header-wrap">
+          <div class="app-header-card">
+            <!-- Icon -->
+            <div class="app-icon-lg">
+              {appIcon ? (
+                <Image width={80} height={80} src={appIcon} alt="" class="w-full h-full object-cover rounded-2xl" />
+              ) : (
+                title.charAt(0).toUpperCase()
+              )}
+            </div>
+
+            <!-- Title block -->
+            <div class="app-title-block">
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+                <h1 class="app-title-text">{title}</h1>
+                {isFree && <span class="badge badge-success badge-sm font-semibold">FREE</span>}
+                {isOpenSource && <span class="badge badge-info badge-sm font-semibold">Open Source</span>}
+              </div>
+              <p class="app-desc">{description}</p>
+
+              <!-- Meta row -->
+              <div class="app-meta-row">
+                <span class="meta-chip">v{version}</span>
+                <span class="meta-chip">{category}</span>
+                {size && <span class="meta-chip">📦 {size}</span>}
+                {platform?.map((p) => (
+                  <span class="meta-chip">{platformIcons[p] ?? ""} {p}</span>
+                ))}
+              </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="app-cta">
+              {downloadUrl ? (
+                <a href={downloadUrl} target="_blank" rel="noopener noreferrer" class="btn-download" id="download-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  Download
+                </a>
+              ) : (
+                <span class="btn-download-disabled">Belum tersedia</span>
+              )}
+              {sourceUrl && (
+                <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="btn-source" id="source-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                  </svg>
+                  Source Code
+                </a>
+              )}
+            </div>
+          </div>
+
+          <!-- Sidebar info -->
+          <div class="app-sidebar">
+            <div class="sidebar-card">
+              <h3 class="sidebar-title">Informasi</h3>
+              <dl class="sidebar-dl">
+                <div class="sidebar-row">
+                  <dt>Versi</dt>
+                  <dd>{version}</dd>
+                </div>
+                <div class="sidebar-row">
+                  <dt>Kategori</dt>
+                  <dd>{category}</dd>
+                </div>
+                {size && (
+                  <div class="sidebar-row">
+                    <dt>Ukuran</dt>
+                    <dd>{size}</dd>
+                  </div>
+                )}
+                <div class="sidebar-row">
+                  <dt>Platform</dt>
+                  <dd>{platform?.join(", ")}</dd>
+                </div>
+                <div class="sidebar-row">
+                  <dt>Harga</dt>
+                  <dd class={isFree ? "text-success font-semibold" : ""}>{isFree ? "Gratis" : "Berbayar"}</dd>
+                </div>
+                <div class="sidebar-row">
+                  <dt>Open Source</dt>
+                  <dd>{isOpenSource ? "Ya" : "Tidak"}</dd>
+                </div>
+                <div class="sidebar-row">
+                  <dt>Dirilis</dt>
+                  <dd><FormattedDate date={pubDate} /></dd>
+                </div>
+                {updatedDate && (
+                  <div class="sidebar-row">
+                    <dt>Diperbarui</dt>
+                    <dd><FormattedDate date={updatedDate} /></dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <!-- Article Body -->
+        <div class="app-article-body prose">
+          <slot />
+        </div>
+
+        <!-- Footer -->
+        <div class="app-article-footer">
+          <div class="footer-divider" />
+          <div class="footer-actions">
+            {downloadUrl && (
+              <a href={downloadUrl} target="_blank" rel="noopener noreferrer" class="btn-download" id="download-btn-footer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download {title}
+              </a>
+            )}
+            <a href="/apps" class="back-link">← Kembali ke semua Apps</a>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <Footer />
+
+    <style>
+      .app-body {
+        background: #f8f9fa;
+        color: #242424;
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+      }
+
+      /* ─── Hero ───────────────────────────────────── */
+      .app-hero {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      }
+      .hero-trigger {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        cursor: zoom-in;
+        border: none;
+        padding: 0;
+        background: none;
+      }
+      .hero-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .hero-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 80px;
+        opacity: 0.2;
+        height: 100%;
+      }
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.45) 100%);
+        pointer-events: none;
+      }
+      .hero-zoom-hint {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px 5px 9px;
+        border-radius: 999px;
+        backdrop-filter: blur(4px);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .hero-trigger:hover .hero-zoom-hint {
+        opacity: 1;
+      }
+
+      /* ─── Gallery Thumbnail Strip ────────────────── */
+      .gallery-strip-wrap {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 10px 16px 0;
+      }
+
+      /* Mobile: hero taller, zoom hint always visible */
+      @media (max-width: 640px) {
+        .app-hero { height: 220px; }
+        .hero-zoom-hint { opacity: 1; font-size: 11px; padding: 4px 10px 4px 8px; bottom: 10px; right: 10px; }
+        .gallery-strip-wrap { padding: 8px 12px 0; }
+      }
+
+      .app-header-wrap {
+        max-width: 900px;
+        margin: 12px auto 0;
+        padding: 0 16px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .app-header-card {
+        flex: 1;
+        min-width: 0;
+        background: #fff;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      @media (min-width: 641px) {
+        .app-header-wrap { padding: 0 24px; gap: 24px; margin-top: 16px; }
+        .app-header-card { padding: 28px; gap: 20px; }
+      }
+      .app-icon-lg {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        font-size: 26px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+      }
+      @media (min-width: 641px) {
+        .app-icon-lg { width: 80px; height: 80px; border-radius: 20px; font-size: 32px; }
+      }
+      .app-title-block {
+        flex: 1;
+        min-width: 0;
+      }
+      .app-title-text {
+        font-size: clamp(20px, 4vw, 28px);
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0 0 8px;
+      }
+      .app-desc {
+        font-size: 15px;
+        color: #6b6b6b;
+        line-height: 1.5;
+        margin: 0 0 12px;
+      }
+      .app-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        background: #f3f4f6;
+        color: #374151;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+      }
+
+      /* ─── CTA Buttons ────────────────────────────── */
+      .app-cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+        margin-top: 4px;
+      }
+      .btn-download {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.15s;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+      }
+      .btn-download:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+      .btn-download-disabled {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #e5e7eb;
+        color: #9ca3af;
+        padding: 10px 22px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: not-allowed;
+      }
+      .btn-source {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #24292e;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: opacity 0.2s, transform 0.15s;
+      }
+      .btn-source:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+
+      /* ─── Sidebar ────────────────────────────────── */
+      .app-sidebar {
+        width: 240px;
+        flex-shrink: 0;
+      }
+      @media (max-width: 640px) {
+        .app-sidebar {
+          width: 100%;
+          order: 2; /* push sidebar below main card on mobile */
+        }
+        .app-header-card {
+          order: 1;
+          width: 100%;
+        }
+      }
+      .sidebar-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      }
+      .sidebar-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #6b6b6b;
+        margin: 0 0 14px;
+      }
+      .sidebar-dl { display: grid; gap: 10px; }
+      .sidebar-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        gap: 8px;
+      }
+      .sidebar-row dt { color: #6b6b6b; }
+      .sidebar-row dd { font-weight: 500; text-align: right; }
+      .text-success { color: #16a34a; }
+
+      /* ─── Article Body ───────────────────────────── */
+      .app-article-body {
+        max-width: 700px;
+        margin: 32px auto 0;
+        padding: 0 16px 48px;
+        font-size: 16px;
+        line-height: 1.75;
+        color: #242424;
+        font-family: 'Poppins', sans-serif;
+      }
+      .app-article-body :global(h2) { font-size: 20px; font-weight: 700; margin: 1.75em 0 0.5em; color: #242424; }
+      .app-article-body :global(h3) { font-size: 17px; font-weight: 700; margin: 1.5em 0 0.5em; color: #242424; }
+      .app-article-body :global(p) { margin-bottom: 1.25em; }
+      .app-article-body :global(ul), .app-article-body :global(ol) { padding-left: 20px; margin-bottom: 1.25em; }
+      .app-article-body :global(li) { margin-bottom: 0.4em; }
+      .app-article-body :global(code:not(pre code)) {
+        background: #f3f4f6; color: #c7254e; padding: 2px 6px; border-radius: 4px;
+        font-size: 0.85em; font-family: 'Courier New', monospace;
+      }
+      .app-article-body :global(pre) {
+        background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px;
+        overflow-x: auto; font-size: 13px; line-height: 1.6; margin: 1.5em 0;
+      }
+      .app-article-body :global(blockquote) {
+        margin: 1.5em 0; padding: 10px 16px; background: #fef3c7;
+        border-left: 4px solid #f59e0b; border-radius: 0 8px 8px 0;
+        font-size: 14px; color: #92400e;
+      }
+      @media (min-width: 641px) {
+        .app-article-body {
+          padding: 0 24px 64px;
+          font-size: 18px;
+        }
+        .app-article-body :global(h2) { font-size: 24px; }
+        .app-article-body :global(h3) { font-size: 20px; }
+      }
+
+      /* ─── Footer ─────────────────────────────────── */
+      .app-article-footer {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 0 16px 60px;
+      }
+      @media (min-width: 641px) {
+        .app-article-footer { padding: 0 24px 80px; }
+      }
+      .footer-divider { height: 1px; background: #e5e7eb; margin-bottom: 32px; }
+      .footer-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .back-link {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6b6b6b;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .back-link:hover { color: #242424; }
+    </style>
+  </body>
+</html>

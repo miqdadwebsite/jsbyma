@@ -1,0 +1,286 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import FormattedDate from "../../components/FormattedDate.astro";
+import Header from "../../components/Header.astro";
+import { SITE_TITLE } from "../../consts";
+
+const apps = (await getCollection("apps")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const categories = ["All", ...new Set(apps.map((a) => a.data.category))];
+const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))];
+---
+
+<!doctype html>
+<html lang="id" data-theme="light">
+  <head>
+    <BaseHead
+      title={`Apps — ${SITE_TITLE}`}
+      description="Kumpulan aplikasi dan tools gratis buatan JSBYMA. Download langsung, bebas iklan."
+    />
+  </head>
+  <body class="bg-base-200 min-h-screen">
+    <Header />
+
+    <main class="w-full max-w-5xl mx-auto px-4 py-10">
+      <!-- Page Header -->
+      <section class="mb-10 mt-4">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-4xl">📦</span>
+          <h1 class="text-3xl font-bold">Apps & Tools</h1>
+        </div>
+        <p class="text-sm opacity-50 mb-6" id="results-count">
+          Showing {apps.length} apps
+        </p>
+
+        <!-- Filters -->
+        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+          <!-- Category Filter -->
+          <div>
+            <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Category</p>
+            <div class="flex flex-wrap gap-2" id="category-filters">
+              {categories.map((cat) => (
+                <button
+                  class:list={[
+                    "category-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
+                    cat === "All" ? "active-cat" : "inactive-cat",
+                  ]}
+                  data-category={cat}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <!-- Platform Filter -->
+          <div class="sm:ml-auto">
+            <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Platform</p>
+            <div class="flex flex-wrap gap-2" id="platform-filters">
+              {platforms.map((plat) => (
+                <button
+                  class:list={[
+                    "platform-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
+                    plat === "All" ? "active-plat" : "inactive-plat",
+                  ]}
+                  data-platform={plat}
+                >
+                  {plat}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Apps Grid -->
+        <div
+          id="apps-grid"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        >
+          {
+            apps.map((app) => (
+              <a
+                href={`/apps/${app.id}/`}
+                class="app-card bg-base-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group no-underline flex flex-col"
+                data-category={app.data.category}
+                data-platforms={JSON.stringify(app.data.platform)}
+                data-app-card
+              >
+                <!-- App Banner / Hero -->
+                <div class="relative h-36 bg-gradient-to-br from-indigo-100 to-purple-100 overflow-hidden">
+                  {app.data.heroImage ? (
+                    <Image
+                      width={480}
+                      height={192}
+                      src={app.data.heroImage}
+                      alt={app.data.title}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-5xl opacity-20 group-hover:scale-110 transition-transform duration-500">
+                      📦
+                    </div>
+                  )}
+
+                  {app.data.featured && (
+                    <span class="absolute top-3 left-3 badge badge-warning badge-sm font-semibold gap-1">
+                      ⭐ Featured
+                    </span>
+                  )}
+
+                  {app.data.isFree && (
+                    <span class="absolute top-3 right-3 badge badge-success badge-sm font-semibold">
+                      FREE
+                    </span>
+                  )}
+                </div>
+
+                <!-- App Info -->
+                <div class="p-4 flex-1 flex flex-col">
+                  <!-- Icon + Title -->
+                  <div class="flex items-start gap-3 mb-3">
+                    <div class="app-icon-wrap shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold shadow-sm">
+                      {app.data.appIcon ? (
+                        <Image
+                          width={48}
+                          height={48}
+                          src={app.data.appIcon}
+                          alt=""
+                          class="w-full h-full object-cover rounded-xl"
+                        />
+                      ) : (
+                        app.data.title.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <h2 class="app-title font-bold text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                        {app.data.title}
+                      </h2>
+                      <span class="text-xs opacity-50">v{app.data.version}</span>
+                    </div>
+                  </div>
+
+                  <!-- Description -->
+                  <p class="text-sm opacity-60 leading-relaxed line-clamp-2 mb-4 flex-1">
+                    {app.data.description}
+                  </p>
+
+                  <!-- Meta Footer -->
+                  <div class="flex items-center justify-between flex-wrap gap-2">
+                    <!-- Platform chips -->
+                    <div class="flex flex-wrap gap-1">
+                      {(app.data.platform ?? []).map((plat) => (
+                        <span class="badge badge-ghost badge-xs">{plat}</span>
+                      ))}
+                    </div>
+                    <!-- Category -->
+                    <span class="badge badge-ghost bg-base-200 badge-sm font-medium">
+                      {app.data.category}
+                    </span>
+                  </div>
+
+                  <!-- Size + Date -->
+                  <div class="flex items-center justify-between mt-3 pt-3 border-t border-base-200 text-xs opacity-40">
+                    {app.data.size && <span>📦 {app.data.size}</span>}
+                    <span>
+                      <FormattedDate date={app.data.pubDate} />
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-20">
+          <div class="text-6xl mb-4">🔍</div>
+          <p class="text-lg font-semibold">No apps found</p>
+          <p class="opacity-60 text-sm mt-1">Try selecting a different filter.</p>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+
+    <script>
+      const cards = document.querySelectorAll<HTMLElement>("[data-app-card]");
+      const grid = document.getElementById("apps-grid")!;
+      const categoryBtns = document.querySelectorAll<HTMLButtonElement>("#category-filters .category-btn");
+      const platformBtns = document.querySelectorAll<HTMLButtonElement>("#platform-filters .platform-btn");
+      const resultsCount = document.getElementById("results-count")!;
+      const emptyState = document.getElementById("empty-state")!;
+
+      let activeCategory = "All";
+      let activePlatform = "All";
+
+      function updateView() {
+        let visible = 0;
+        cards.forEach((card) => {
+          const cat = card.dataset.category!;
+          const plats: string[] = JSON.parse(card.dataset.platforms || "[]");
+          const matchCat = activeCategory === "All" || cat === activeCategory;
+          const matchPlat = activePlatform === "All" || plats.includes(activePlatform);
+
+          if (matchCat && matchPlat) {
+            card.style.display = "";
+            visible++;
+          } else {
+            card.style.display = "none";
+          }
+        });
+
+        resultsCount.textContent = `Showing ${visible} app${visible !== 1 ? "s" : ""}`;
+
+        if (visible === 0) {
+          grid.style.display = "none";
+          emptyState.classList.remove("hidden");
+        } else {
+          grid.style.display = "";
+          emptyState.classList.add("hidden");
+        }
+      }
+
+      categoryBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          categoryBtns.forEach((b) => {
+            b.classList.remove("active-cat");
+            b.classList.add("inactive-cat");
+          });
+          btn.classList.add("active-cat");
+          btn.classList.remove("inactive-cat");
+          activeCategory = btn.dataset.category!;
+          updateView();
+        });
+      });
+
+      platformBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          platformBtns.forEach((b) => {
+            b.classList.remove("active-plat");
+            b.classList.add("inactive-plat");
+          });
+          btn.classList.add("active-plat");
+          btn.classList.remove("inactive-plat");
+          activePlatform = btn.dataset.platform!;
+          updateView();
+        });
+      });
+
+      updateView();
+    </script>
+
+    <style>
+      /* Category/platform pills */
+      .active-cat,
+      .active-plat {
+        background-color: #111;
+        color: #fff;
+        border-color: #111;
+      }
+      .inactive-cat,
+      .inactive-plat {
+        background-color: transparent;
+        color: inherit;
+        border-color: oklch(var(--b3));
+      }
+      .inactive-cat:hover,
+      .inactive-plat:hover {
+        background-color: oklch(var(--b3));
+      }
+
+      /* App card hover lift */
+      .app-card {
+        transform: translateY(0);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .app-card:hover {
+        transform: translateY(-4px);
+      }
+    </style>
+  </body>
+</html>
