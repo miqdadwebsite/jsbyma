@@ -3,7 +3,7 @@ title: 'Script Moderator Liqo'
 description: 'Berikut adalah contoh naskah yang bisa digunakan untuk memandu jalannya kegiatan liqo, mulai dari pembukaan hingga penutup.'
 category: 'Islami'
 pubDate: 'Jul 15 2026'
-heroImage: '../../assets/blog-placeholder-3.jpg'
+heroImage: '../../assets/blog-placeholder-3.webp'
 ---
 
 ### **1. Pembukaan**

@@ -11,10 +11,10 @@ pubDate: 2026-10-22
 isFree: true
 isOpenSource: false
 featured: false
-heroImage: "../../assets/apps/dzikirin-app/S1.jpg"
+heroImage: "../../assets/apps/dzikirin-app/S1.webp"
 screenshots:
-  - "../../assets/apps/dzikirin-app/S2.jpg"
-  - "../../assets/apps/dzikirin-app/S3.jpg"
+  - "../../assets/apps/dzikirin-app/S2.webp"
+  - "../../assets/apps/dzikirin-app/S3.webp"
 ---
 
 ## Tentang Aplikasi
@@ -33,8 +33,8 @@ Berawal dari masalah pribadi, seringkali saya ingin berdoa dan berdzikir namun s
 2. Klik titik 3 di kanan atas
 3. Klik "Instal dan buat pintasan"
 4. Klik "Instal"
-![alt text](../../assets/apps/dzikirin-app/1.png)
-![alt text](../../assets/apps/dzikirin-app/2.png)
+![alt text](../../assets/apps/dzikirin-app/1.webp)
+![alt text](../../assets/apps/dzikirin-app/2.webp)
 
 
 <!-- > **Perhatian:** Gunakan tool ini hanya jika printer menampilkan pesan waste ink full. -->

@@ -3,7 +3,7 @@ title: 'Cara blokir website tertentu'
 description: 'Cara blokir website tertentu di Windows 11, mudah dan gratis'
 category: 'Tutorial'
 pubDate: 'Sept 19 2026'
-heroImage: '../../assets/block_website.png'
+heroImage: '../../assets/block_website.webp'
 ---
 
 1. Buka Notepad sebagai Administrator
