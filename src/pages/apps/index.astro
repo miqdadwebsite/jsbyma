@@ -148,9 +148,21 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
                     </span>
                   </div>
 
-                  <!-- Size + Date -->
-                  <div class="flex items-center justify-between mt-3 pt-3 border-t border-base-200 text-xs opacity-40">
-                    {app.data.size && <span>📦 {app.data.size}</span>}
+                  <!-- Size + Likes + Date -->
+                  <div class="flex items-center justify-between mt-3 pt-3 border-t border-base-200 text-xs opacity-60">
+                    <div class="flex items-center gap-2">
+                      {app.data.size && <span>📦 {app.data.size}</span>}
+                      {app.data.size && <span class="opacity-40">·</span>}
+                      <span
+                        class="like-count flex items-center gap-1"
+                        data-like-id={app.data.title.replace(/\s+/g, "-").toLowerCase()}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-red-500">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span class="like-num">—</span>
+                      </span>
+                    </div>
                     <span>
                       <FormattedDate date={app.data.pubDate} />
                     </span>
@@ -237,6 +249,31 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
       });
 
       updateView();
+
+      import { formatLikes, loadLikes } from "../../lib/likes";
+
+      async function loadLikeCounts() {
+        const metaRows = document.querySelectorAll<HTMLElement>("[data-like-id]");
+        const ids = Array.from(metaRows).map((el) => el.dataset.likeId!).filter(Boolean);
+        if (ids.length === 0) return;
+
+        try {
+          const likes = await loadLikes(ids);
+          likes.forEach((state, id) => {
+            const matches = Array.from(metaRows).filter(
+              (el) => el.dataset.likeId === id,
+            );
+            matches.forEach((metaRow) => {
+              const numEl = metaRow.querySelector(".like-num");
+              if (numEl) numEl.textContent = formatLikes(state.likes);
+            });
+          });
+        } catch (error) {
+          console.error("Failed to load like counts:", error);
+        }
+      }
+
+      loadLikeCounts();
     </script>
 
     <style>

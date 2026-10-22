@@ -7,6 +7,7 @@ import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
+import LikeButton from "../components/LikeButton.astro";
 
 type Props = CollectionEntry<"apps">["data"];
 
@@ -33,6 +34,8 @@ const {
 const rawRepo = githubUrl ?? sourceUrl;
 const repoUrl = rawRepo && rawRepo.trim() !== "" ? rawRepo : undefined;
 const hasDownload = Boolean(downloadUrl && downloadUrl.trim() !== "");
+
+const likeId = title.replace(/\s+/g, "-").toLowerCase();
 
 // Combine hero image with gallery screenshots (like portfolio pattern)
 const allImages: ImageMetadata[] = [
@@ -107,10 +110,15 @@ const platformIcons: Record<string, string> = {
           <div class="app-header-card">
             <!-- Title block -->
             <div class="app-title-block">
-              <div class="flex flex-wrap items-center gap-2 mb-1">
-                <h1 class="app-title-text">{title}</h1>
-                {isFree && <span class="badge badge-success badge-sm font-semibold">FREE</span>}
-                {isOpenSource && <span class="badge badge-info badge-sm font-semibold">Open Source</span>}
+              <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h1 class="app-title-text">{title}</h1>
+                  {isFree && <span class="badge badge-success badge-sm font-semibold">FREE</span>}
+                  {isOpenSource && <span class="badge badge-info badge-sm font-semibold">Open Source</span>}
+                </div>
+                <div class="header-like">
+                  <LikeButton id={likeId} variant="header" />
+                </div>
               </div>
               <p class="app-desc">{description}</p>
 
@@ -209,31 +217,43 @@ const platformIcons: Record<string, string> = {
         <div class="app-article-footer">
           <div class="footer-divider" />
           <div class="footer-actions">
-            <div class="footer-buttons">
-              {hasDownload && (
-                <a href={downloadUrl} target="_blank" rel="noopener noreferrer" class="btn-download" id="download-btn-footer">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  {downloadText} {title}
-                </a>
-              )}
-              {isOpenSource && (
-                <a
-                  href={repoUrl || "#"}
-                  target={repoUrl ? "_blank" : undefined}
-                  rel={repoUrl ? "noopener noreferrer" : undefined}
-                  class="btn-github"
-                  id="github-btn-footer"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                  </svg>
-                  <span>GitHub</span>
-                </a>
-              )}
+            <!-- Baris 1: Like Button -->
+            <div class="footer-like-row">
+              <LikeButton id={likeId} />
             </div>
-            <a href="/apps" class="back-link">← Kembali ke semua Apps</a>
+
+            <!-- Baris 2: Download / Action Buttons & Kembali ke semua Apps -->
+            <div class="footer-bottom-row">
+              {(hasDownload || isOpenSource) ? (
+                <div class="footer-buttons">
+                  {hasDownload && (
+                    <a href={downloadUrl} target="_blank" rel="noopener noreferrer" class="btn-download" id="download-btn-footer">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                      </svg>
+                      {downloadText} {title}
+                    </a>
+                  )}
+                  {isOpenSource && (
+                    <a
+                      href={repoUrl || "#"}
+                      target={repoUrl ? "_blank" : undefined}
+                      rel={repoUrl ? "noopener noreferrer" : undefined}
+                      class="btn-github"
+                      id="github-btn-footer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                      </svg>
+                      <span>GitHub</span>
+                    </a>
+                  )}
+                </div>
+              ) : (
+                <div />
+              )}
+              <a href="/apps" class="back-link">← Kembali ke semua Apps</a>
+            </div>
           </div>
         </div>
       </article>
@@ -536,6 +556,15 @@ const platformIcons: Record<string, string> = {
       .footer-divider { height: 1px; background: #e5e7eb; margin-bottom: 32px; }
       .footer-actions {
         display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .footer-like-row {
+        display: flex;
+        align-items: center;
+      }
+      .footer-bottom-row {
+        display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
@@ -546,6 +575,10 @@ const platformIcons: Record<string, string> = {
         flex-wrap: wrap;
         align-items: center;
         gap: 12px;
+      }
+      .header-like {
+        display: inline-flex;
+        align-items: center;
       }
       .back-link {
         font-size: 14px;
