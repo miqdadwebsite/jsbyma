@@ -12,6 +12,11 @@ const posts = (await getCollection("blog"))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 
+// Fetch all applications
+const allApps = (await getCollection("apps")).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
 const jsonLd = {
 	"@context": "https://schema.org",
 	"@type": "WebSite",
@@ -43,20 +48,199 @@ const jsonLd = {
 	</head>
 	<body class="bg-base-200">
 		<Header />
-		<main class="w-full max-w-[760px] mx-auto p-4">
-			<!-- Hero Section -->
-			<div class="hero bg-base-100 rounded-box shadow-xl mb-12 mt-4 p-8">
-				<div class="hero-content text-center">
-					<div>
-						<h1 class="text-2xl md:text-5xl font-bold">
-							Welcome to My Blog's 👋
-						</h1>
+		<main class="w-full max-w-5xl mx-auto px-4 py-6">
+			<!-- Hero Section: Top Applications -->
+			<section class="hero-section relative bg-base-100 rounded-3xl shadow-xl border border-base-300/80 mb-16 mt-2 p-6 sm:p-8 md:p-10 overflow-hidden">
+				<!-- Decorative Ambient Glow -->
+				<div class="absolute -top-24 -right-24 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+				<div class="absolute -bottom-24 -left-24 w-80 h-80 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+
+				<div class="relative z-10 text-center">
+					<!-- Pill Badge -->
+					<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-primary/10 text-primary border border-primary/20 mb-3">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+							<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+						</svg>
+						<span>Top Applications</span>
+					</div>
+
+					<!-- Hero Heading -->
+					<h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+						Aplikasi Terpopuler
+					</h1>
+
+					<!-- Hero Subtitle -->
+					<p class="text-sm md:text-base opacity-70 mt-2.5 max-w-xl mx-auto leading-relaxed">
+						Aplikasi terpopuler berdasarkan jumlah apresiasi terbanyak.
+					</p>
+
+					<!-- Cards Grid -->
+					{
+						allApps.length > 0 ? (
+							<div
+								id="top-apps-grid"
+								class:list={[
+									"grid gap-6 mt-8 text-left",
+									allApps.length === 1
+										? "grid-cols-1 max-w-md mx-auto"
+										: allApps.length === 2
+											? "grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto"
+											: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+								]}
+							>
+								{allApps.map((app, index) => {
+									const likeId = app.data.title.replace(/\s+/g, "-").toLowerCase();
+									return (
+										<a
+											href={`/apps/${app.id}/`}
+											class:list={[
+												"hero-app-card group relative bg-base-200/50 hover:bg-base-100 border border-base-300 hover:border-primary/40 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col no-underline text-base-content",
+												index >= 3 && "hidden",
+											]}
+											data-hero-app-card
+											data-like-id={likeId}
+											data-app-id={app.id}
+											data-likes="0"
+										>
+											<!-- Thumbnail / Banner -->
+											<div class="relative h-44 bg-gradient-to-br from-indigo-100/60 to-purple-100/60 dark:from-base-300 dark:to-base-200 overflow-hidden">
+												{app.data.heroImage ? (
+													<Image
+														width={480}
+														height={220}
+														src={app.data.heroImage}
+														alt={app.data.title}
+														class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+													/>
+												) : (
+													<div class="w-full h-full flex items-center justify-center text-5xl opacity-20 group-hover:scale-110 transition-transform duration-500">
+														📦
+													</div>
+												)}
+
+												<!-- Rank Badge (top left) -->
+												<div class="absolute top-3 left-3 flex items-center gap-1.5">
+													<span
+														class:list={[
+															"app-rank-badge badge badge-sm font-bold shadow-md border",
+															index === 0 && "bg-amber-400 text-amber-950 border-amber-500/40",
+															index === 1 && "bg-slate-200 text-slate-800 border-slate-300",
+															index === 2 && "bg-amber-700 text-white border-amber-800/40",
+															index > 2 && "bg-base-300 text-base-content border-base-content/20",
+														]}
+														data-rank-index={index}
+													>
+														{index === 0
+															? "🥇 #1 Top"
+															: index === 1
+																? "🥈 #2 Top"
+																: index === 2
+																	? "🥉 #3 Top"
+																	: `#${index + 1}`}
+													</span>
+												</div>
+
+												<!-- Likes Pill (top right) -->
+												<div class="absolute top-3 right-3">
+													<span class="badge badge-neutral bg-black/70 backdrop-blur-md text-white border-none text-xs font-semibold gap-1.5 px-2.5 py-1 shadow-sm">
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															viewBox="0 0 24 24"
+															fill="currentColor"
+															class="w-3.5 h-3.5 text-rose-500"
+														>
+															<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+														</svg>
+														<span class="like-num">—</span>
+													</span>
+												</div>
+											</div>
+
+											<!-- Content -->
+											<div class="p-5 flex-1 flex flex-col justify-between">
+												<div>
+													<!-- Category & Platforms -->
+													<div class="flex items-center justify-between gap-2 mb-2.5">
+														<span class="badge badge-ghost bg-base-300/70 badge-sm font-medium">
+															{app.data.category}
+														</span>
+														<div class="flex items-center gap-1">
+															{(app.data.platform ?? []).slice(0, 2).map((plat) => (
+																<span class="badge badge-ghost badge-xs opacity-70">
+																	{plat}
+																</span>
+															))}
+														</div>
+													</div>
+
+													<!-- App Title -->
+													<h3 class="font-bold text-lg leading-snug group-hover:text-primary transition-colors duration-200 line-clamp-1 mb-1.5">
+														{app.data.title}
+													</h3>
+
+													<!-- App Description -->
+													<p class="text-xs md:text-sm opacity-65 leading-relaxed line-clamp-2 mb-4">
+														{app.data.description}
+													</p>
+												</div>
+
+												<!-- Footer meta row -->
+												<div class="pt-3 border-t border-base-200 flex items-center justify-between text-xs font-medium">
+													<span class="opacity-50">v{app.data.version}</span>
+													<span class="text-primary font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform duration-200">
+														Lihat Aplikasi
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															class="w-3.5 h-3.5"
+															viewBox="0 0 20 20"
+															fill="currentColor"
+														>
+															<path
+																fill-rule="evenodd"
+																d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+																clip-rule="evenodd"
+															/>
+														</svg>
+													</span>
+												</div>
+											</div>
+										</a>
+									);
+								})}
+							</div>
+						) : (
+							<div class="text-center py-12">
+								<p class="opacity-60 text-sm">Belum ada aplikasi yang tersedia.</p>
+							</div>
+						)
+					}
+
+					<!-- Explore all CTA -->
+					<div class="flex justify-center mt-8">
+						<a
+							href="/apps"
+							class="explore-apps-btn btn btn-outline btn-sm sm:btn-md rounded-full font-medium gap-2 hover:bg-black hover:text-white hover:border-black transition-all shadow-sm"
+						>
+							<span>Explore All Apps</span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="w-4 h-4"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</a>
 					</div>
 				</div>
-			</div>
+			</section>
 
 			<!-- Latest Posts Section -->
-			<section class="mb-24">
+			<section class="max-w-[760px] mx-auto mb-24">
 				<h2 class="text-3xl font-bold text-center mb-8">
 					Latest Articles
 				</h2>
@@ -143,28 +327,92 @@ const jsonLd = {
 		<script>
 			import { formatLikes, loadLikes } from "../lib/likes";
 
-			async function loadLikeCounts() {
-				const metaRows = document.querySelectorAll<HTMLElement>("[data-like-id]");
-				const ids = Array.from(metaRows).map((el) => el.dataset.likeId!);
+			const rankConfigs = [
+				{ text: "🥇 #1 Top", classNames: "bg-amber-400 text-amber-950 border-amber-500/40" },
+				{ text: "🥈 #2 Top", classNames: "bg-slate-200 text-slate-800 border-slate-300" },
+				{ text: "🥉 #3 Top", classNames: "bg-amber-700 text-white border-amber-800/40" },
+			];
+
+			async function initLikesAndRankings() {
+				// Query all elements with data-like-id
+				const allLikeElements = Array.from(
+					document.querySelectorAll<HTMLElement>("[data-like-id]"),
+				);
+				const ids = allLikeElements
+					.map((el) => el.dataset.likeId!)
+					.filter(Boolean);
+
 				if (!ids.length) return;
 
 				try {
-					const likes = await loadLikes(ids);
-					likes.forEach((state, id) => {
-						const metaRow = Array.from(metaRows).find(
-							(el) => el.dataset.likeId === id,
-						);
-						if (!metaRow) return;
-						const numEl = metaRow.querySelector(".like-num");
-						if (numEl) numEl.textContent = formatLikes(state.likes);
+					const likesMap = await loadLikes(ids);
+
+					// 1. Update like numbers in all elements (both hero app cards and blog posts)
+					allLikeElements.forEach((el) => {
+						const id = el.dataset.likeId;
+						if (!id || !likesMap.has(id)) return;
+						const state = likesMap.get(id)!;
+						const numEl = el.querySelector(".like-num");
+						if (numEl) {
+							numEl.textContent = formatLikes(state.likes);
+						}
 					});
-				} catch {
-					// silently ignore network errors
+
+					// 2. Re-sort Top Applications in the Hero Section by like count descending
+					const heroCards = Array.from(
+						document.querySelectorAll<HTMLElement>("[data-hero-app-card]"),
+					);
+					const grid = document.getElementById("top-apps-grid");
+
+					if (heroCards.length > 0 && grid) {
+						// Attach like counts to dataset
+						heroCards.forEach((card) => {
+							const likeId = card.dataset.likeId;
+							const count =
+								likeId && likesMap.has(likeId)
+									? likesMap.get(likeId)!.likes
+									: 0;
+							card.dataset.likes = String(count);
+						});
+
+						// Sort descending by like count
+						heroCards.sort((a, b) => {
+							const countA = Number(a.dataset.likes) || 0;
+							const countB = Number(b.dataset.likes) || 0;
+							return countB - countA;
+						});
+
+						// Re-arrange cards in DOM and update top 3 visibility and rank badges
+						heroCards.forEach((card, index) => {
+							grid.appendChild(card);
+							if (index < 3) {
+								card.classList.remove("hidden");
+								const badge = card.querySelector<HTMLElement>(".app-rank-badge");
+								if (badge) {
+									const config = rankConfigs[index];
+									if (config) {
+										badge.textContent = config.text;
+										badge.className = `app-rank-badge badge badge-sm font-bold shadow-md border ${config.classNames}`;
+									} else {
+										badge.textContent = `#${index + 1}`;
+									}
+								}
+							} else {
+								card.classList.add("hidden");
+							}
+						});
+					}
+				} catch (error) {
+					console.error("Failed to load likes:", error);
 				}
 			}
 
-			// Load like counts when DOM is ready
-			window.addEventListener('DOMContentLoaded', loadLikeCounts);
+			// Load like counts and sort hero when DOM is ready
+			if (document.readyState === "loading") {
+				window.addEventListener("DOMContentLoaded", initLikesAndRankings);
+			} else {
+				initLikesAndRankings();
+			}
 		</script>
 		<style>
 			/* Post title hover color */
@@ -175,6 +423,22 @@ const jsonLd = {
 			/* Placeholder thumbnail bg */
 			.placeholder-thumb {
 				background: linear-gradient(135deg, oklch(var(--b3)), oklch(var(--b2)));
+			}
+
+			/* Hero app card hover lift */
+			.hero-app-card {
+				transform: translateY(0);
+				transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+			}
+			.hero-app-card:hover {
+				transform: translateY(-4px);
+			}
+
+			/* Explore all apps button hover */
+			.explore-apps-btn:hover {
+				background-color: #000000 !important;
+				color: #ffffff !important;
+				border-color: #000000 !important;
 			}
 		</style>
 	</body>
