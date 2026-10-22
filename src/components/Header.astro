@@ -3,7 +3,7 @@ import { SITE_TITLE } from "../consts";
 import HeaderLink from "./HeaderLink.astro";
 ---
 
-<header class="navbar bg-base-100 shadow-sm px-4">
+<header class="navbar bg-base-100 shadow-sm px-4 relative z-50">
 	<div class="navbar-start">
 		<div class="dropdown">
 			<div tabindex="0" role="button" class="btn btn-ghost md:hidden">
@@ -23,7 +23,7 @@ import HeaderLink from "./HeaderLink.astro";
 			</div>
 			<ul
 				tabindex="0"
-				class="menu menu-lg dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+				class="menu menu-lg dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow-2xl border border-base-200"
 			>
 				<li><HeaderLink href="/">Home</HeaderLink></li>
 				<li><HeaderLink href="/blog">Blog</HeaderLink></li>
