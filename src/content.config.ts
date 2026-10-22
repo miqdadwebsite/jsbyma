@@ -29,8 +29,10 @@ const apps = defineCollection({
 			version: z.string().optional().default('1.0.0'),
 			category: z.string().optional().default('Utility'),
 			platform: z.array(z.enum(['Windows', 'Mac', 'Linux', 'Android', 'iOS', 'Web'])).optional().default(['Windows']),
-			downloadUrl: z.string().url().optional(),
-			sourceUrl: z.string().url().optional(),
+			downloadUrl: z.string().url().or(z.literal('')).optional(),
+			downloadText: z.string().optional().default('Download'),
+			sourceUrl: z.string().url().or(z.literal('')).optional(),
+			githubUrl: z.string().url().or(z.literal('')).optional(),
 			size: z.string().optional(), // e.g. "15 MB"
 			// Dates
 			pubDate: z.coerce.date(),

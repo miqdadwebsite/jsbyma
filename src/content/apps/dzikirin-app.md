@@ -5,7 +5,8 @@ version: "1.0.0"
 category: "Islam"
 platform: ["Android"]
 downloadUrl: "https://dzikirin.vercel.app/"
-size: "3 MB"
+downloadText: "Buka Aplikasi"
+size: "1 MB"
 pubDate: 2026-10-22
 isFree: true
 isOpenSource: false
