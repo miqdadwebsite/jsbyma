@@ -34,8 +34,20 @@ const imageUrl = new URL(image.src, Astro.site);
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="google-site-verification" content="P0N5OfxBdpWkqVHANXu4fWA05r23SNTkaGJgCRSzVjg" />
+
+<!-- Google Tag Manager -->
+<script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-MTFTDC67"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="shortcut icon" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="shortcut icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 <link
 	rel="alternate"
@@ -81,5 +93,15 @@ const imageUrl = new URL(image.src, Astro.site);
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageUrl} />
+
+<!-- Structured Data (JSON-LD) for Google Site Name -->
+<script type="application/ld+json" set:html={JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": "JSBYMA",
+	"alternateName": ["Just Sharing by MA", "jsbyma"],
+	"url": Astro.site ? Astro.site.toString() : "https://jsbyma.pages.dev/"
+})} />
+
 
 
