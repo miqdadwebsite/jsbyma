@@ -37,42 +37,56 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
           Showing {apps.length} apps
         </p>
 
-        <!-- Filters -->
-        <div class="flex flex-col sm:flex-row gap-4 mb-8">
-          <!-- Category Filter -->
-          <div>
-            <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Category</p>
-            <div class="flex flex-wrap gap-2" id="category-filters">
-              {categories.map((cat) => (
-                <button
-                  class:list={[
-                    "category-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
-                    cat === "All" ? "active-cat" : "inactive-cat",
-                  ]}
-                  data-category={cat}
-                >
-                  {cat}
-                </button>
-              ))}
+        <!-- Filters and Sort -->
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4 mb-8">
+          <div class="flex flex-col sm:flex-row gap-6 flex-wrap">
+            <!-- Category Filter -->
+            <div>
+              <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Category</p>
+              <div class="flex flex-wrap gap-2" id="category-filters">
+                {categories.map((cat) => (
+                  <button
+                    class:list={[
+                      "category-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
+                      cat === "All" ? "active-cat" : "inactive-cat",
+                    ]}
+                    data-category={cat}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <!-- Platform Filter -->
+            <div>
+              <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Platform</p>
+              <div class="flex flex-wrap gap-2" id="platform-filters">
+                {platforms.map((plat) => (
+                  <button
+                    class:list={[
+                      "platform-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
+                      plat === "All" ? "active-plat" : "inactive-plat",
+                    ]}
+                    data-platform={plat}
+                  >
+                    {plat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          <!-- Platform Filter -->
-          <div class="sm:ml-auto">
-            <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-2">Platform</p>
-            <div class="flex flex-wrap gap-2" id="platform-filters">
-              {platforms.map((plat) => (
-                <button
-                  class:list={[
-                    "platform-btn text-sm px-4 py-1.5 rounded-full border transition-all font-medium",
-                    plat === "All" ? "active-plat" : "inactive-plat",
-                  ]}
-                  data-platform={plat}
-                >
-                  {plat}
-                </button>
-              ))}
+          <!-- Sort Dropdown -->
+          <div class="dropdown dropdown-end self-start lg:self-end">
+            <div tabindex="0" role="button" class="btn btn-sm m-1">
+              Sort by: <span id="current-sort">Newest</span>
             </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-40 p-2 shadow border border-base-300">
+              <li><button class="sort-option" data-value="newest">Newest</button></li>
+              <li><button class="sort-option" data-value="oldest">Oldest</button></li>
+              <li><button class="sort-option" data-value="popular">Popular</button></li>
+            </ul>
           </div>
         </div>
 
@@ -88,6 +102,7 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
                 class="app-card bg-base-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group no-underline flex flex-col"
                 data-category={app.data.category}
                 data-platforms={JSON.stringify(app.data.platform)}
+                data-date={app.data.pubDate.valueOf()}
                 data-app-card
               >
                 <!-- App Banner / Hero -->
@@ -187,17 +202,37 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
     <script>
       const cards = document.querySelectorAll<HTMLElement>("[data-app-card]");
       const grid = document.getElementById("apps-grid")!;
+      const sortOptions = document.querySelectorAll<HTMLButtonElement>(".sort-option");
+      const currentSortLabel = document.getElementById("current-sort")!;
       const categoryBtns = document.querySelectorAll<HTMLButtonElement>("#category-filters .category-btn");
       const platformBtns = document.querySelectorAll<HTMLButtonElement>("#platform-filters .platform-btn");
       const resultsCount = document.getElementById("results-count")!;
       const emptyState = document.getElementById("empty-state")!;
 
+      let activeSort = "newest";
       let activeCategory = "All";
       let activePlatform = "All";
 
       function updateView() {
         let visible = 0;
-        cards.forEach((card) => {
+        const cardsArray = Array.from(cards);
+
+        cardsArray.sort((a, b) => {
+          if (activeSort === "newest") {
+            return Number(b.dataset.date) - Number(a.dataset.date);
+          } else if (activeSort === "oldest") {
+            return Number(a.dataset.date) - Number(b.dataset.date);
+          } else if (activeSort === "popular") {
+            const likesA = Number(a.dataset.likes || 0);
+            const likesB = Number(b.dataset.likes || 0);
+            return likesB - likesA;
+          }
+          return 0;
+        });
+
+        cardsArray.forEach((card) => grid.appendChild(card));
+
+        cardsArray.forEach((card) => {
           const cat = card.dataset.category!;
           const plats: string[] = JSON.parse(card.dataset.platforms || "[]");
           const matchCat = activeCategory === "All" || cat === activeCategory;
@@ -221,6 +256,16 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
           emptyState.classList.add("hidden");
         }
       }
+
+      sortOptions.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activeSort = btn.dataset.value!;
+          currentSortLabel.textContent = btn.textContent;
+          updateView();
+          // Close dropdown
+          (document.activeElement as HTMLElement)?.blur();
+        });
+      });
 
       categoryBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -266,10 +311,18 @@ const platforms = ["All", ...new Set(apps.flatMap((a) => a.data.platform ?? []))
             matches.forEach((metaRow) => {
               const numEl = metaRow.querySelector(".like-num");
               if (numEl) numEl.textContent = formatLikes(state.likes);
+              const card = metaRow.closest("[data-app-card]") as HTMLElement;
+              if (card) {
+                card.dataset.likes = String(state.likes);
+              }
             });
           });
         } catch (error) {
           console.error("Failed to load like counts:", error);
+        }
+
+        if (activeSort === "popular") {
+          updateView();
         }
       }
 
